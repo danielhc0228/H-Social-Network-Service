@@ -1,7 +1,8 @@
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { styled } from "styled-components";
-import { db, auth } from "../firebase";
+import { db, auth, storage } from "../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const Form = styled.form`
     display: flex;
@@ -79,25 +80,26 @@ export default function PostTweetForm() {
         if (!user || isLoading || tweet === "" || tweet.length > 180) return;
         try {
             setLoading(true);
-            // const doc =
-            await addDoc(collection(db, "tweets"), {
+            const doc = await addDoc(collection(db, "tweets"), {
+                // const doc = for photo upload. fine to go without it if no uploading photo.
                 tweet,
                 createdAt: Date.now(),
                 username: user.displayName || "Anonymous",
                 userId: user.uid,
             });
             // for uploading image to Firebase storage but Firebase storage is no longer a free plan so implementing this feature with Appwrite later instead of Firebase.
-            // if (file) {
-            //     const locationRef = ref(
-            //       storage,
-            //       `tweets/${user.uid}-${user.displayName}/${doc.id}`
-            //     );
-            //     const result = await uploadBytes(locationRef, file);
-            //     const url = await getDownloadURL(result.ref);
-            //     await updateDoc(doc, {
-            //       photo: url,
-            //     });
-            //   }
+            if (file) {
+                const locationRef = ref(
+                    storage,
+                    `tweets/${user.uid}/${doc.id}`
+                );
+                const result = await uploadBytes(locationRef, file);
+                const url = await getDownloadURL(result.ref);
+                await updateDoc(doc, {
+                    photo: url,
+                });
+            }
+            //
             setTweet("");
             setFile(null);
         } catch (e) {
