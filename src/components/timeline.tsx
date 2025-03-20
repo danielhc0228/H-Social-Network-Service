@@ -33,7 +33,7 @@ export default function Timeline() {
     const [tweets, setTweet] = useState<ITweet[]>([]);
     useEffect(() => {
         let unsubscribe: Unsubscribe | null = null;
-        const fetchTweets = async () => {
+        const fetchTweets = () => {
             const tweetsQuery = query(
                 collection(db, "tweets"),
                 orderBy("createdAt", "desc"),
@@ -51,7 +51,7 @@ export default function Timeline() {
             //         id: doc.id,
             //     };
             // });
-            unsubscribe = await onSnapshot(tweetsQuery, (snapshot) => {
+            unsubscribe = onSnapshot(tweetsQuery, (snapshot) => {
                 const tweets = snapshot.docs.map((doc) => {
                     const { tweet, createdAt, userId, username, fileData } =
                         doc.data();
