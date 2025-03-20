@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { ITweet } from "../components/timeline";
 import Tweet from "../components/tweet";
+import { updateProfile } from "firebase/auth";
 
 const Wrapper = styled.div`
     display: flex;
@@ -55,10 +56,58 @@ const Tweets = styled.div`
     gap: 10px;
 `;
 
+const ModifyButton = styled.button`
+    background-color: transparent;
+    color: white;
+    font-weight: 600;
+    border: 0;
+    font-size: 12px;
+    padding: 10px 10px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex; /* Use inline-flex for alignment */
+    align-items: center;
+    margin-left: 10px; /* Space between input and button */
+
+    svg {
+        width: 16px; /* Adjust size as needed */
+        height: 16px;
+        stroke: white; /* Ensures the icon is white */
+    }
+`;
+
+const EditInputContainer = styled.div`
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Align items vertically */
+    width: 100%;
+    margin-bottom: 10px;
+`;
+
+const EditInput = styled.input`
+    width: 50%;
+    padding: 0px 10px;
+    font-size: 22px;
+    border: none; /* Remove all borders */
+    border-bottom: 2px solid white; /* Add white bottom border */
+    background-color: transparent; /* Make the background transparent */
+    color: white; /* Set text color to white */
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+    margin-right: 10px; /* Space between input and modify button */
+
+    &:focus {
+        border-bottom: 2px solid white; /* Change border color on focus */
+    }
+`;
+
 export default function Profile() {
     const user = auth.currentUser;
     const [avatar, setAvatar] = useState<string | null>(null);
     const [tweets, setTweets] = useState<ITweet[]>([]);
+    const [isEdit, setIsEdit] = useState(false);
+    const [newText, setNewText] = useState(user?.displayName);
 
     // Firebase storage implementation
     //    const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,6 +208,17 @@ export default function Profile() {
         fetchTweets();
     });
 
+    const onModify = async () => {
+        if (!user) return;
+        try {
+            updateProfile(user, { displayName: newText });
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setIsEdit(!isEdit);
+        }
+    };
+
     return (
         <Wrapper>
             <AvatarUpload htmlFor='avatar'>
@@ -181,7 +241,52 @@ export default function Profile() {
                 type='file'
                 accept='image/*'
             />
-            <Name>{user?.displayName ?? "Anonymous"}</Name>
+            <EditInputContainer>
+                {isEdit ? (
+                    <EditInput
+                        type='text'
+                        value={newText ?? ""}
+                        onChange={(e) => setNewText(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && onModify()} // Save on Enter key
+                        autoFocus
+                    />
+                ) : (
+                    <Name>{user?.displayName ?? "Anonymous"}</Name>
+                )}
+
+                <ModifyButton onClick={onModify}>
+                    {isEdit ? (
+                        <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={1.5}
+                            stroke='currentColor'
+                            className='size-6'
+                        >
+                            <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                d='m4.5 12.75 6 6 9-13.5'
+                            />
+                        </svg>
+                    ) : (
+                        <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={1.5}
+                            stroke='currentColor'
+                        >
+                            <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                d='m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125'
+                            />
+                        </svg>
+                    )}
+                </ModifyButton>
+            </EditInputContainer>
             <Tweets>
                 {tweets.map((tweet) => (
                     <Tweet key={tweet.id} {...tweet} />
