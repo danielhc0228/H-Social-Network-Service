@@ -1,58 +1,72 @@
-<<<<<<< HEAD
 # twitter-clone
 =======
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
+## Challenges:
+Implementing reset password feature using email
 ```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError("");
+        if (isLoading || email === "") return;
+        try {
+            setLoading(true);
+            await sendPasswordResetEmail(auth, email);
+            alert("Reset email Sent!");
+            navigate("/login");
+        } catch (e) {
+            if (e instanceof FirebaseError) {
+                setError(e.message);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+```
+Implementing modify button
+```js
+const [isEdit, setIsEdit] = useState(false);
+const [newText, setNewText] = useState(tweet);
+
+const onModify = async () => {
+        if (user?.uid !== userId) return;
+        try {
+            await updateDoc(doc(db, "tweets", id), { tweet: newText });
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setIsEdit(!isEdit);
+        }
+    };
+// ...
+// ... return
+//...
+              {isEdit ? (
+                    <EditInput
+                        type='text'
+                        value={newText}
+                        onChange={(e) => setNewText(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && onModify()} // Save on Enter key
+                        autoFocus
+                    />
+                ) : (
+                    <Payload>{tweet}</Payload>
+                )}
+
+// ...
+
+                        <ModifyButton onClick={onModify}>
+                            {isEdit ? (
+                                <svg>
+                            ) : (
+                                <svg>
+                            )}
+                        </ModifyButton>
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
 ```
+
+
 >>>>>>> bf50bd4 (Initial commit with layout component and routes)
