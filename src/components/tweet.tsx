@@ -1,8 +1,8 @@
 import { styled } from "styled-components";
 import { ITweet } from "./timeline";
-import { auth, db, storage } from "../firebase";
+import { auth, db /*storage*/ } from "../firebase";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
+// import { deleteObject, ref } from "firebase/storage";
 import { useState } from "react";
 
 const Wrapper = styled.div`
@@ -84,7 +84,13 @@ const EditInput = styled.input`
     }
 `;
 
-export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
+export default function Tweet({
+    username,
+    fileData,
+    tweet,
+    userId,
+    id,
+}: ITweet) {
     const [isEdit, setIsEdit] = useState(false);
     const [newText, setNewText] = useState(tweet);
 
@@ -94,10 +100,11 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
         if (!ok || user?.uid !== userId) return;
         try {
             await deleteDoc(doc(db, "tweets", id));
-            if (photo) {
-                const photoRef = ref(storage, `tweets/${user.uid}/${id}`);
-                await deleteObject(photoRef);
-            }
+            // if you have Firebase storage, use below:
+            // if (photo) {
+            //     const photoRef = ref(storage, `tweets/${user.uid}/${id}`);
+            //     await deleteObject(photoRef);
+            // }
         } catch (e) {
             console.log(e);
         } finally {
@@ -183,9 +190,9 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
                     </div>
                 ) : null}
             </Column>
-            {photo ? (
+            {fileData ? (
                 <Column>
-                    <Photo src={photo} />
+                    <Photo src={fileData} />
                 </Column>
             ) : null}
         </Wrapper>

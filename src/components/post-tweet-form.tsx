@@ -1,8 +1,7 @@
-import { addDoc, collection, updateDoc } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
 import { styled } from "styled-components";
-import { db, auth, storage } from "../firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, auth } from "../firebase";
 
 const Form = styled.form`
     display: flex;
@@ -63,14 +62,20 @@ const SubmitBtn = styled.input`
 export default function PostTweetForm() {
     const [isLoading, setLoading] = useState(false);
     const [tweet, setTweet] = useState("");
-    const [file, setFile] = useState<File | null>(null);
+    const [file, setFile] = useState<string | null>(null);
     const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setTweet(e.target.value);
     };
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { files } = e.target;
         if (files && files.length === 1) {
-            setFile(files[0]);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                console.log("File data encoded:", result); // 확인 로그 추가
+                setFile(result); // 파일 데이터를 콜백으로 전달
+            };
+            reader.readAsDataURL(files[0]);
         }
     };
 
@@ -80,26 +85,13 @@ export default function PostTweetForm() {
         if (!user || isLoading || tweet === "" || tweet.length > 180) return;
         try {
             setLoading(true);
-            const doc = await addDoc(collection(db, "tweets"), {
-                // const doc = for photo upload. fine to go without it if no uploading photo.
+            await addDoc(collection(db, "tweets"), {
                 tweet,
                 createdAt: Date.now(),
                 username: user.displayName || "Anonymous",
                 userId: user.uid,
+                fileData: file,
             });
-            // for uploading image to Firebase storage but Firebase storage is no longer a free plan so implementing this feature with Appwrite later instead of Firebase.
-            if (file) {
-                const locationRef = ref(
-                    storage,
-                    `tweets/${user.uid}/${doc.id}`
-                );
-                const result = await uploadBytes(locationRef, file);
-                const url = await getDownloadURL(result.ref);
-                await updateDoc(doc, {
-                    photo: url,
-                });
-            }
-            //
             setTweet("");
             setFile(null);
         } catch (e) {
@@ -120,7 +112,7 @@ export default function PostTweetForm() {
                 placeholder='What is happening?!'
             />
             <AttachFileButton htmlFor='file'>
-                {file ? "Photo added ✅" : "Add photo"}
+                {file ? "Photo added ✅" : "Add photo (1MB)"}
             </AttachFileButton>
             <AttachFileInput
                 onChange={onFileChange}
