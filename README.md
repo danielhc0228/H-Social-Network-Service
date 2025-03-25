@@ -147,3 +147,8 @@ const onModify = async () => {
                             )}
                         </ModifyButton>
 ```
+
+__Mobile Implementation__\
+Used ChatGPT to modify styled components for mobile implementation of the project.\
+Much quicker than when I edit my CSS which increases my work efficiency.
+
