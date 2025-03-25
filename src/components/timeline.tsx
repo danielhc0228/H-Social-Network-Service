@@ -21,7 +21,12 @@ export interface ITweet {
 }
 
 const Wrapper = styled.div`
-    margin-top: 50px;
+    margin-top: 30px;
+    margin-bottom: 70px;
+
+    @media (max-width: 768px) {
+        margin: 0px 5px;
+    }
 `;
 
 const Title = styled.h1`

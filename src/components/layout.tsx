@@ -10,6 +10,12 @@ const Wrapper = styled.div`
     padding: 50px 0px;
     width: 100%;
     max-width: 860px;
+    padding-bottom: 60px; /* Space for the fixed menu */
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr; /* Prevent extra space pushing the menu down */
+    }
 `;
 
 const Menu = styled.div`
@@ -17,6 +23,19 @@ const Menu = styled.div`
     flex-direction: column;
     align-items: center;
     gap: 20px;
+
+    @media (max-width: 768px) {
+        flex-direction: row;
+        justify-content: space-around;
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        background-color: black;
+        padding: 10px 0;
+        border-top: 1px solid white;
+        z-index: 1000; /* Ensures it's above other content */
+    }
 `;
 
 const MenuItem = styled.div`
@@ -36,6 +55,14 @@ const MenuItem = styled.div`
         border-color: tomato;
         svg {
             fill: tomato;
+        }
+    }
+
+    @media (max-width: 768px) {
+        height: 40px;
+        width: 40px;
+        svg {
+            width: 24px;
         }
     }
 `;

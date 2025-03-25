@@ -72,8 +72,8 @@ export default function PostTweetForm() {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const result = reader.result as string;
-                console.log("File data encoded:", result); // 확인 로그 추가
-                setFile(result); // 파일 데이터를 콜백으로 전달
+                console.log("File data encoded:", result);
+                setFile(result);
             };
             reader.readAsDataURL(files[0]);
         }
