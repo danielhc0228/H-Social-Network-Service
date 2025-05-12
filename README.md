@@ -2,6 +2,8 @@
 _Front-end_ handled by React.js and TypeScript\
 _Back-end_ handled by Firebase.
 
+This project features a social network service that works similar to X, previously known as Twitter.
+
 I have not studied backed deeply in university so I have no technique regarding it.\
 However Firebase has allowed me to build applications that require back-end skills without needing me to study any back-end skills.
 
