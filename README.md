@@ -1,4 +1,4 @@
-# twitter-clone
+# Social Network Service by Daniel Chung
 _Front-end_ handled by React.js and TypeScript\
 _Back-end_ handled by Firebase.
 
