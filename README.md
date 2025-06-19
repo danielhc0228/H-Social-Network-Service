@@ -1,6 +1,8 @@
-# twitter-clone
+# Social Network Service by Daniel Chung
 _Front-end_ handled by React.js and TypeScript\
 _Back-end_ handled by Firebase.
+
+This project features a social network service that works similar to X, previously known as Twitter.
 
 I have not studied backed deeply in university so I have no technique regarding it.\
 However Firebase has allowed me to build applications that require back-end skills without needing me to study any back-end skills.
@@ -147,3 +149,8 @@ const onModify = async () => {
                             )}
                         </ModifyButton>
 ```
+
+__Mobile Implementation__\
+Used ChatGPT to modify styled components for mobile implementation of the project.\
+Much quicker than when I edit my CSS which increases my work efficiency.
+
